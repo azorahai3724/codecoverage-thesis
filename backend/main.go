@@ -13,7 +13,7 @@ func main() {
 
 	println("Serving")
 
-	router.Handle("/", http.FileServer(http.Dir("/Users/kananeyvazov/codecoverage-thesis/frontend")))
+	router.Handle("/", http.FileServer(http.Dir("/Users/kananeyvazov/OneDrive/Jedi_Academy/codecoverage-thesis/frontend")))
 	router.HandleFunc("/app/create", newApp).Methods("POST", "OPTIONS")
 	//router.HandleFunc("/app/update", newApp).Methods("POST")
 	router.HandleFunc("/app", getAllApps).Methods("GET")
