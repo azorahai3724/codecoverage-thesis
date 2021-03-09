@@ -82,16 +82,26 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	count, err := c.CountDocuments(ctx, bson.M{"Name": a.Name})
+	filter := bson.M{"Name": a.Name}
+
+	count, err := c.CountDocuments(ctx, filter)
 	if err != nil {
 		log.Fatalf("Counting document: %s", err)
 	}
 
 	if count >= 1 {
-		fmt.Printf("Document by the name %s already exists", a.Name)
+		fmt.Printf("Document by the name %s already exists, updated", a.Name)
 		enableCORS(&w)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("500 - Document already exists"))
+		//w.WriteHeader(http.StatusInternalServerError)
+		//w.Write([]byte("500 - Document already exists"))
+		newReport := reports{
+			CommitHash:         "anan",
+			CoveragePercentage: 20.0,
+			CreationDate:       time.Now(),
+		}
+		op := bson.M{"$push": bson.M{"Reports": newReport}}
+		c.UpdateOne(ctx, filter, op)
+
 		return
 	}
 
@@ -99,7 +109,7 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 
 	//todo
 	newReport := reports{
-		CommitHash:         content,
+		CommitHash:         "atan",
 		CoveragePercentage: 15.2,
 		CreationDate:       time.Now(),
 	}
