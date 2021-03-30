@@ -1,0 +1,14 @@
+github.com/bitrise-io/stack-service/internal/stack/config.go:36:	Error		0.0%
+github.com/bitrise-io/stack-service/internal/stack/config.go:41:	NewConfig	83.3%
+github.com/bitrise-io/stack-service/internal/stack/config.go:52:	newConfig	100.0%
+github.com/bitrise-io/stack-service/internal/stack/config.go:70:	Error		0.0%
+github.com/bitrise-io/stack-service/internal/stack/config.go:74:	validate	71.4%
+github.com/bitrise-io/stack-service/internal/stack/handler.go:18:	Error		0.0%
+github.com/bitrise-io/stack-service/internal/stack/handler.go:51:	NewHandler	70.0%
+github.com/bitrise-io/stack-service/internal/stack/handler.go:69:	generateStacks	93.3%
+github.com/bitrise-io/stack-service/internal/stack/handler.go:95:	MacosCodename	100.0%
+github.com/bitrise-io/stack-service/internal/stack/handler.go:119:	newTemplater	69.6%
+github.com/bitrise-io/stack-service/internal/stack/handler.go:162:	render		76.0%
+github.com/bitrise-io/stack-service/internal/stack/handler.go:199:	parse		75.0%
+github.com/bitrise-io/stack-service/internal/stack/handler.go:207:	execute		100.0%
+total:									(statements)	78.1%

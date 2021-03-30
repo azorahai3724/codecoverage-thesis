@@ -4,10 +4,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -43,7 +46,6 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 	var a App
 
 	a.Name = r.FormValue("Name")
-	print(a.Name)
 
 	err = r.ParseMultipartForm(32 << 20)
 
@@ -58,20 +60,16 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error parsing multipart request", http.StatusBadRequest)
 	}
 
-	f, h, err := r.FormFile("CoverageFile")
+	f, _, err := r.FormFile("CoverageFile")
 	if err != nil {
 		log.Fatalf("Parsing file: %s", err)
 	}
 	defer f.Close()
 
-	n := h.Filename
-	print("Filename:", n)
-
 	var b bytes.Buffer
 	io.Copy(&b, f)
 
 	content := b.String()
-	print(content)
 
 	b.Reset()
 
@@ -89,14 +87,22 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("Counting document: %s", err)
 	}
 
+	percentage, err := parseCoverageFile(content)
+	if err != nil {
+		log.Fatalf("parsing coverage file: %s", err)
+	}
+	//TODODODOODOD
+	cHash := r.FormValue("CommitHash")
 	if count >= 1 {
 		fmt.Printf("Document by the name %s already exists, updated", a.Name)
 		enableCORS(&w)
+		//TODO handle the response
 		//w.WriteHeader(http.StatusInternalServerError)
 		//w.Write([]byte("500 - Document already exists"))
+
 		newReport := reports{
-			CommitHash:         "anan",
-			CoveragePercentage: 20.0,
+			CommitHash:         cHash,
+			CoveragePercentage: percentage,
 			CreationDate:       time.Now(),
 		}
 		op := bson.M{"$push": bson.M{"Reports": newReport}}
@@ -109,8 +115,8 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 
 	//todo
 	newReport := reports{
-		CommitHash:         "atan",
-		CoveragePercentage: 15.2,
+		CommitHash:         cHash,
+		CoveragePercentage: percentage,
 		CreationDate:       time.Now(),
 	}
 
@@ -127,8 +133,27 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 
 	enableCORS(&w)
 	w.WriteHeader(http.StatusOK)
+	//TODO response
 	//json.NewEncoder(w).Encode(a.AppID.Hex())
 
+}
+
+func parseCoverageFile(s string) (float64, error) {
+
+	if strings.Contains(s, "total:") {
+		l := s[strings.LastIndex(s, ")")+1:]
+
+		ts := strings.Split(l, "%")
+
+		ps := strings.TrimSpace(ts[0])
+
+		pf, err := strconv.ParseFloat(ps, 64)
+		if err != nil {
+			log.Fatalf("parsing coverage file: %s", err)
+		}
+		return pf, nil
+	}
+	return 0.0, errors.New("coverage file not supported")
 }
 
 func enableCORS(w *http.ResponseWriter) {

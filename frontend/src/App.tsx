@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form"
 type NewApp = {
   Name: string;
   CoverageFile: FileList;
+  CommitHash: string;
 };
 
 
@@ -17,6 +18,7 @@ export const AppForm = () => {
   const onNewAppSubmit = async (d: NewApp) => {
     fd.append('Name', d.Name)
     fd.append('CoverageFile', d.CoverageFile[0])
+    fd.append('CommitHash', d.CommitHash)
     const response = await fetch("http://localhost:10000/app/create", {
       method: 'POST',
       mode:'cors',
@@ -44,6 +46,13 @@ export const AppForm = () => {
         <input type="file" id="CoverageFile" name="CoverageFile" ref={register({required:true})}/>
         {errors.CoverageFile && (
           <div className="error">Coverage file is mandatory.</div>
+        )}
+      </div>
+      <div className="field">
+        <label htmlFor="CommitHash">Commit Hash </label>
+        <input type="text" id="CommitHash" name="CommitHash" ref={register({required:true})}/>
+        {errors.CommitHash && (
+          <div className="error">Commit Hash is mandatory.</div>
         )}
       </div>
       <button type="submit">Create app</button>
