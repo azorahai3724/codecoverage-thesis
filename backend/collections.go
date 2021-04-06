@@ -38,7 +38,9 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Hit endpoint: newApp")
 
 	if err != nil {
+
 		log.Fatalf("get db collection: %s", err)
+
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -67,6 +69,7 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 	defer f.Close()
 
 	var b bytes.Buffer
+
 	io.Copy(&b, f)
 
 	content := b.String()
@@ -74,7 +77,9 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 	b.Reset()
 
 	if err != nil {
+
 		http.Error(w, "error getting file", http.StatusInternalServerError)
+
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -84,36 +89,52 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 
 	count, err := c.CountDocuments(ctx, filter)
 	if err != nil {
+
 		log.Fatalf("Counting document: %s", err)
+
 	}
 
 	percentage, err := parseCoverageFile(content)
+
 	if err != nil {
+
 		log.Fatalf("parsing coverage file: %s", err)
+
 	}
-	//TODODODOODOD
+
 	cHash := r.FormValue("CommitHash")
+
 	if count >= 1 {
+
 		fmt.Printf("Document by the name %s already exists, updated", a.Name)
+
 		enableCORS(&w)
-		//TODO handle the response
-		//w.WriteHeader(http.StatusInternalServerError)
-		//w.Write([]byte("500 - Document already exists"))
 
 		newReport := reports{
 			CommitHash:         cHash,
 			CoveragePercentage: percentage,
 			CreationDate:       time.Now(),
 		}
+
 		op := bson.M{"$push": bson.M{"Reports": newReport}}
 		c.UpdateOne(ctx, filter, op)
 
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Updated the document"))
+
+		var updatedApp App
+		err = c.FindOne(ctx, filter).Decode(&updatedApp)
+
+		if err != nil {
+			log.Printf("getting an app: %s", err)
+		}
+
+		json.NewEncoder(w).Encode(updatedApp)
 		return
 	}
 
 	a.AppID = primitive.NewObjectID()
 
-	//todo
 	newReport := reports{
 		CommitHash:         cHash,
 		CoveragePercentage: percentage,
@@ -132,9 +153,9 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	enableCORS(&w)
-	w.WriteHeader(http.StatusOK)
-	//TODO response
-	//json.NewEncoder(w).Encode(a.AppID.Hex())
+	//201 Created
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(a)
 
 }
 
@@ -171,10 +192,6 @@ func getOneApp(w http.ResponseWriter, r *http.Request) {
 	p := mux.Vars(r)
 	appName := p["Name"]
 
-	if err != nil {
-		log.Fatalf("get db collection: %s", err)
-	}
-
 	filter := bson.M{"Name": appName}
 
 	var app App
@@ -185,7 +202,7 @@ func getOneApp(w http.ResponseWriter, r *http.Request) {
 	err := c.FindOne(ctx, filter).Decode(&app)
 
 	if err != nil {
-		fmt.Printf("getting an app: %s", err)
+		log.Printf("getting an app: %s", err)
 	}
 	fmt.Println(app)
 	json.NewEncoder(w).Encode(app)
@@ -193,6 +210,7 @@ func getOneApp(w http.ResponseWriter, r *http.Request) {
 }
 
 func getAllApps(w http.ResponseWriter, r *http.Request) {
+
 	fmt.Println("Hit endpoint: getAllApps")
 	w.Header().Set("Content-Type", "application/json")
 
@@ -217,4 +235,5 @@ func getAllApps(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(apps)
 
 	json.NewEncoder(w).Encode(apps)
+
 }
