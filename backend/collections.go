@@ -55,7 +55,6 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error parsing multipart request", http.StatusBadRequest)
 	}
 
-	//_ = json.NewDecoder(r.Body).Decode(&a)
 	err = r.ParseMultipartForm(32 << 20)
 
 	if err != nil {
@@ -120,7 +119,6 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 		c.UpdateOne(ctx, filter, op)
 
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Updated the document"))
 
 		var updatedApp App
 		err = c.FindOne(ctx, filter).Decode(&updatedApp)

@@ -1,7 +1,9 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import { useForm } from "react-hook-form"
+import ReactDOM from 'react-dom';
+import { XYPlot,XAxis, YAxis, HorizontalGridLines, VerticalGridLines,LineMarkSeries, Hint, LineMarkSeriesPoint } from 'react-vis';
+import "react-vis/dist/style.css";
 
 type NewApp = {
   Name: string;
@@ -13,27 +15,107 @@ type NewApp = {
 //https://www.carlrippon.com/getting-started-with-react-hook-form-with-typeScript/
 
 export const AppForm = () => {
+
   const { register, handleSubmit, errors } = useForm<NewApp>();
+
   const fd = new FormData();
+
   const onNewAppSubmit = async (d: NewApp) => {
+
     fd.append('Name', d.Name)
     fd.append('CoverageFile', d.CoverageFile[0])
     fd.append('CommitHash', d.CommitHash)
+
     const response = await fetch("http://localhost:10000/app/create", {
+
       method: 'POST',
       mode:'cors',
       body: fd,
       headers : { 
         'Accept': 'application/json'
        }
+
     });
-    //const jsonData = await response.json();
-    //console.log("Response: ", jsonData);
-    //console.log(response.text)
+
+    const appJsonData = await response.json();
+    
+    var appName = appJsonData["Name"];
+    var reports = appJsonData["Reports"];
+
+    type graphData = {
+      x: Date,
+      y: number,
+      z: string
+    }
+
+    let data: graphData[] = [];
+
+    for (var i=0; i<reports.length; i++) {
+
+        var golangCD = reports[i].CreationDate;
+        var cdRaw = golangCD.slice(0,19);
+        var cd = new Date(cdRaw);
+
+        var cpString = reports[i].CoveragePercentage;
+        var cp = Number(cpString);
+        
+        var ch = reports[i].CommitHash;
+        data[i] = {x: cd, y: cp, z: ch};
+
+
+    }
+    class Graph extends React.Component {
+      hoveredCircle!: LineMarkSeriesPoint;
+      state = {
+        hovered: false
+      }
+      render() {
+        const {hovered} = this.state;
+        return (
+          <React.Fragment>
+          <h3>{ appName }</h3>
+  
+          <XYPlot xType="time" yDomain={[0,100]} width={1200} height={600} >
+          <VerticalGridLines />
+          <HorizontalGridLines />
+          <XAxis title="Date" />
+          <YAxis title="Coverage percent" />
+          <LineMarkSeries
+            animation
+            onValueMouseOver={d => {
+              this.hoveredCircle = d;
+              this.setState({hovered: true});
+            }}
+            onValueMouseOut={d => this.setState({hovered: false})}
+            data={ data }
+          />
+          { hovered === true && 
+              <Hint value={this.hoveredCircle}>
+                <div>
+                  {this.hoveredCircle.z}
+                </div>
+              </Hint>
+          }
+          </XYPlot>
+          </React.Fragment>
+        )
+      }
+    }
+
+    const graphDiv = document.getElementById("graph");
+
+    if (Object.keys(appJsonData).length !== 0) {
+        ReactDOM.render(
+          <Graph />, graphDiv
+        )
+    }
+    
   };
 
   return (
+
     <form onSubmit={handleSubmit(onNewAppSubmit)}>
+  
       <div className="field">
         <label htmlFor="Name">Name:</label>
         <input type="text" id="Name" name="Name" ref={register({required:true})}/>
@@ -56,7 +138,9 @@ export const AppForm = () => {
         )}
       </div>
       <button type="submit">Create app</button>
+
     </form>
+
 
   );
 
