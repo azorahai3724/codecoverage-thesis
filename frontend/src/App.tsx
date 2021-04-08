@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import { useForm } from "react-hook-form"
 import ReactDOM from 'react-dom';
-import { XYPlot,XAxis, YAxis, HorizontalGridLines, VerticalGridLines,LineMarkSeries, Hint, LineMarkSeriesPoint } from 'react-vis';
+import { XAxis, YAxis, HorizontalGridLines, VerticalGridLines,LineMarkSeries, Hint, LineMarkSeriesPoint, FlexibleXYPlot } from 'react-vis';
 import "react-vis/dist/style.css";
 
 type NewApp = {
@@ -74,8 +74,8 @@ export const AppForm = () => {
         return (
           <React.Fragment>
           <h3>{ appName }</h3>
-  
-          <XYPlot xType="time" yDomain={[0,100]} width={1200} height={600} >
+          
+          <FlexibleXYPlot xType="time" yDomain={[0,100]} width={1200} height={800} >
           <VerticalGridLines />
           <HorizontalGridLines />
           <XAxis title="Date" />
@@ -96,7 +96,7 @@ export const AppForm = () => {
                 </div>
               </Hint>
           }
-          </XYPlot>
+          </FlexibleXYPlot>
           </React.Fragment>
         )
       }
