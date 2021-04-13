@@ -37,23 +37,11 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("Hit endpoint: newApp")
 
-	if err != nil {
-
-		log.Fatalf("get db collection: %s", err)
-
-	}
-
 	w.Header().Set("Content-Type", "application/json")
 
 	var a App
 
 	a.Name = r.FormValue("Name")
-
-	err = r.ParseMultipartForm(32 << 20)
-
-	if err != nil {
-		http.Error(w, "error parsing multipart request", http.StatusBadRequest)
-	}
 
 	err = r.ParseMultipartForm(32 << 20)
 
@@ -69,17 +57,17 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 
 	var b bytes.Buffer
 
-	io.Copy(&b, f)
-
-	content := b.String()
-
-	b.Reset()
+	_, err = io.Copy(&b, f)
 
 	if err != nil {
 
 		http.Error(w, "error getting file", http.StatusInternalServerError)
 
 	}
+
+	content := b.String()
+
+	b.Reset()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

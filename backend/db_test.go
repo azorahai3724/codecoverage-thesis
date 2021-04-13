@@ -12,19 +12,25 @@ func Test_getDbClient(t *testing.T) {
 	tests := []struct {
 		name string
 
-		want1      *mongo.Client
+		want       *mongo.Client
 		wantErr    bool
 		inspectErr func(err error, t *testing.T) //use for more precise error evaluation after test
 	}{
-		//TODO: Add test cases
+		{
+			name:    "False connection",
+			want:    nil,
+			wantErr: true,
+			inspectErr: func(err error, t *testing.T) {
+			},
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got1, err := getDbClient()
+			got, err := getDbClient()
 
-			if !reflect.DeepEqual(got1, tt.want1) {
-				t.Errorf("getDbClient got1 = %v, want1: %v", got1, tt.want1)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("getDbClient got = %v, want: %v", got, tt.want)
 			}
 
 			if (err != nil) != tt.wantErr {
@@ -50,7 +56,18 @@ func Test_testDbConnection(t *testing.T) {
 		wantErr    bool
 		inspectErr func(err error, t *testing.T) //use for more precise error evaluation after test
 	}{
-		//TODO: Add test cases
+		{
+			name: "Invalid connection",
+			args: func(t *testing.T) args {
+				return args{
+					ctx: nil,
+					c:   &mongo.Client{},
+				}
+			},
+			wantErr: true,
+			inspectErr: func(err error, t *testing.T) {
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -79,21 +96,33 @@ func Test_getDbCollection(t *testing.T) {
 		name string
 		args func(t *testing.T) args
 
-		want1      *mongo.Collection
+		want       *mongo.Collection
 		wantErr    bool
 		inspectErr func(err error, t *testing.T) //use for more precise error evaluation after test
 	}{
-		//TODO: Add test cases
+		{
+			name: "Invalid collection",
+			args: func(t *testing.T) args {
+				return args{
+					CollectionName: "",
+					DbName:         "",
+				}
+			},
+			want:    nil,
+			wantErr: true,
+			inspectErr: func(err error, t *testing.T) {
+			},
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tArgs := tt.args(t)
 
-			got1, err := getDbCollection(tArgs.CollectionName, tArgs.DbName)
+			got, err := getDbCollection(tArgs.CollectionName, tArgs.DbName)
 
-			if !reflect.DeepEqual(got1, tt.want1) {
-				t.Errorf("getDbCollection got1 = %v, want1: %v", got1, tt.want1)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("getDbCollection got = %v, want: %v", got, tt.want)
 			}
 
 			if (err != nil) != tt.wantErr {

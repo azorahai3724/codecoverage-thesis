@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form"
 import ReactDOM from 'react-dom';
 import { XAxis, YAxis, HorizontalGridLines, VerticalGridLines,LineMarkSeries, Hint, LineMarkSeriesPoint, FlexibleXYPlot } from 'react-vis';
 import "react-vis/dist/style.css";
+import {Button, Table, TableBody, TableCell, TableHeader, TableHeaderCell, TableHeaderRow, TableRow } from '@bitrise/bitkit';
 
 type NewApp = {
   Name: string;
@@ -13,6 +14,14 @@ type NewApp = {
 
 
 //https://www.carlrippon.com/getting-started-with-react-hook-form-with-typeScript/
+
+type graphData = {
+  x: Date,
+  y: number,
+  z: string
+}
+
+let data: graphData[] = [];
 
 export const AppForm = () => {
 
@@ -42,14 +51,6 @@ export const AppForm = () => {
     var appName = appJsonData["Name"];
     var reports = appJsonData["Reports"];
 
-    type graphData = {
-      x: Date,
-      y: number,
-      z: string
-    }
-
-    let data: graphData[] = [];
-
     for (var i=0; i<reports.length; i++) {
 
         var golangCD = reports[i].CreationDate;
@@ -73,31 +74,52 @@ export const AppForm = () => {
         const {hovered} = this.state;
         return (
           <React.Fragment>
-          <h3>{ appName }</h3>
-          
-          <FlexibleXYPlot xType="time" yDomain={[0,100]} width={1200} height={800} >
-          <VerticalGridLines />
-          <HorizontalGridLines />
-          <XAxis title="Date" />
-          <YAxis title="Coverage percent" />
-          <LineMarkSeries
-            animation
-            onValueMouseOver={d => {
-              this.hoveredCircle = d;
-              this.setState({hovered: true});
-            }}
-            onValueMouseOut={d => this.setState({hovered: false})}
-            data={ data }
-          />
-          { hovered === true && 
-              <Hint value={this.hoveredCircle}>
-                <div>
-                  {this.hoveredCircle.z}
-                </div>
-              </Hint>
-          }
-          </FlexibleXYPlot>
+
+            <h3>{ appName }</h3>
+            
+            <FlexibleXYPlot xType="time" yDomain={[0,100]} width={1200} height={800}>
+            <VerticalGridLines />
+            <HorizontalGridLines />
+            <XAxis title="Date" />
+            <YAxis title="Coverage percent" />
+            <LineMarkSeries
+              animation
+              onValueMouseOver={d => {
+                this.hoveredCircle = d;
+                this.setState({hovered: true});
+              }}
+              onValueMouseOut={d => this.setState({hovered: false})}
+              data={ data }
+            />
+            { hovered === true && 
+                <Hint value={this.hoveredCircle}>
+                    {this.hoveredCircle.z}
+                </Hint>
+            }
+            </FlexibleXYPlot>
+
+            <Table>
+              <TableHeader>
+                <TableHeaderRow>
+                  <TableHeaderCell>Creation Date</TableHeaderCell>
+                  <TableHeaderCell>Coverage percentage</TableHeaderCell>
+                  <TableHeaderCell>Commit Hash</TableHeaderCell>
+                </TableHeaderRow>
+              </TableHeader>
+              <TableBody>
+              {data.map(d => 
+                <TableRow>
+                  <TableCell>{d.x.toISOString()}</TableCell>
+                  <TableCell>{d.y}</TableCell>
+                  <TableCell>{d.z}</TableCell>
+                </TableRow>
+                )
+              }
+              </TableBody>
+          </Table>
+
           </React.Fragment>
+
         )
       }
     }
@@ -113,35 +135,36 @@ export const AppForm = () => {
   };
 
   return (
+    <React.Fragment>
+      <form onSubmit={handleSubmit(onNewAppSubmit)}>
+        <div className="field">
+          <label htmlFor="Name">Name: </label>
+          <input type="text" id="Name" name="Name" ref={register({required:true})}/>
+          {errors.Name && errors.Name.type === "required" && (
+            <div className="error">App name is mandatory.</div>
+          )}
+        </div>
 
-    <form onSubmit={handleSubmit(onNewAppSubmit)}>
-  
-      <div className="field">
-        <label htmlFor="Name">Name:</label>
-        <input type="text" id="Name" name="Name" ref={register({required:true})}/>
-        {errors.Name && errors.Name.type === "required" && (
-          <div className="error">App name is mandatory.</div>
-        )}
-      </div>
-      <div className="field">
-        <label htmlFor="CoverageFile">Coverage File: </label>
-        <input type="file" id="CoverageFile" name="CoverageFile" ref={register({required:true})}/>
-        {errors.CoverageFile && (
-          <div className="error">Coverage file is mandatory.</div>
-        )}
-      </div>
-      <div className="field">
-        <label htmlFor="CommitHash">Commit Hash </label>
-        <input type="text" id="CommitHash" name="CommitHash" ref={register({required:true})}/>
-        {errors.CommitHash && (
-          <div className="error">Commit Hash is mandatory.</div>
-        )}
-      </div>
-      <button type="submit">Create app</button>
+        <div className="field">
+          <label htmlFor="CoverageFile">Coverage File: </label>
+          <input type="file" id="CoverageFile" name="CoverageFile" ref={register({required:true})}/>
+          {errors.CoverageFile && (
+            <div className="error">Coverage file is mandatory.</div>
+          )}
+        </div>
 
-    </form>
+        <div className="field">
+          <label htmlFor="CommitHash">Commit Hash </label>
+          <input type="text" id="CommitHash" name="CommitHash" ref={register({required:true})}/>
+          {errors.CommitHash && (
+            <div className="error">Commit Hash is mandatory.</div>
+          )}
+        </div>
 
+        <Button size="small" type="submit">Create app</Button>
 
+      </form>
+    </React.Fragment>
   );
 
 };

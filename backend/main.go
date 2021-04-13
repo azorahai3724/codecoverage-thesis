@@ -15,11 +15,12 @@ func main() {
 
 	router.Handle("/", http.FileServer(http.Dir("/Users/kananeyvazov/OneDrive/Jedi_Academy/codecoverage-thesis/frontend")))
 	router.HandleFunc("/app/create", newApp).Methods("POST", "OPTIONS")
-	//router.HandleFunc("/app/update", newApp).Methods("POST")
 	router.HandleFunc("/app", getAllApps).Methods("GET")
 	router.HandleFunc("/app/{Name}", getOneApp).Methods("GET")
 
-	if err := http.ListenAndServe(":10000", router); err != nil {
+	err := http.ListenAndServe(":10000", router)
+
+	if err != nil {
 		log.Fatal("Listen and serve: %w", err)
 	}
 

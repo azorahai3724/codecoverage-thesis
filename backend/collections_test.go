@@ -13,17 +13,13 @@ func Test_newApp(t *testing.T) {
 	}
 	tests := []struct {
 		name string
-		args func(t *testing.T) args
+		args args
 	}{
-		//TODO: Add test cases
+		// TODO: Add test cases.
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tArgs := tt.args(t)
-
-			newApp(tArgs.w, tArgs.r)
-
+			newApp(tt.args.w, tt.args.r)
 		})
 	}
 }
@@ -36,21 +32,41 @@ func Test_parseCoverageFile(t *testing.T) {
 		name string
 		args func(t *testing.T) args
 
-		want1      float64
+		want       float64
 		wantErr    bool
 		inspectErr func(err error, t *testing.T) //use for more precise error evaluation after test
 	}{
-		//TODO: Add test cases
+		{
+			name: "100 percent",
+			args: func(t *testing.T) args {
+				return args{s: `github.com/bitrise-io/stack-service/internal/stack/handler.go:207:	execute		100.0%
+					total:									(statements)	100.0%`}
+			},
+			want:    100.0,
+			wantErr: false,
+			inspectErr: func(err error, t *testing.T) {
+			},
+		},
+		{
+			name: "Invalid input",
+			args: func(t *testing.T) args {
+				return args{s: `sehv 1111234%`}
+			},
+			want:    0.0,
+			wantErr: true,
+			inspectErr: func(err error, t *testing.T) {
+			},
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tArgs := tt.args(t)
 
-			got1, err := parseCoverageFile(tArgs.s)
+			got, err := parseCoverageFile(tArgs.s)
 
-			if !reflect.DeepEqual(got1, tt.want1) {
-				t.Errorf("parseCoverageFile got1 = %v, want1: %v", got1, tt.want1)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("parseCoverageFile got = %v, want: %v", got, tt.want)
 			}
 
 			if (err != nil) != tt.wantErr {
