@@ -172,11 +172,11 @@ export const AppForm = () => {
 
 };
 
-function UTCToLocalTime(date: Date) {
+function UTCToLocalTime(givenDate: Date) {
 
-  let localTime = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
+  let localTime = new Date(givenDate.getTime() + givenDate.getTimezoneOffset() * 60 * 1000);
 
-  localTime.setHours(date.getHours() - date.getTimezoneOffset() / 60);
+  localTime.setHours(givenDate.getHours() - givenDate.getTimezoneOffset() / 60);
 
   return localTime;   
 }
