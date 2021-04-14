@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import { useForm } from "react-hook-form"
 import ReactDOM from 'react-dom';
-import { XAxis, YAxis, HorizontalGridLines, VerticalGridLines,LineMarkSeries, Hint, LineMarkSeriesPoint, FlexibleXYPlot } from 'react-vis';
+import { XAxis, YAxis, HorizontalGridLines, VerticalGridLines,LineMarkSeries, Hint, LineMarkSeriesPoint, FlexibleXYPlot, XYPlot, MarkSeries } from 'react-vis';
 import "react-vis/dist/style.css";
 import {Button, Table, TableBody, TableCell, TableHeader, TableHeaderCell, TableHeaderRow, TableRow } from '@bitrise/bitkit';
 
@@ -14,14 +14,6 @@ type NewApp = {
 
 
 //https://www.carlrippon.com/getting-started-with-react-hook-form-with-typeScript/
-
-type graphData = {
-  x: Date,
-  y: number,
-  z: string
-}
-
-let data: graphData[] = [];
 
 export const AppForm = () => {
 
@@ -51,20 +43,31 @@ export const AppForm = () => {
     var appName = appJsonData["Name"];
     var reports = appJsonData["Reports"];
 
+    type graphData = {
+      x: Date,
+      y: number,
+      z: string
+    }
+
+    let data: graphData[] = [];
+
     for (var i=0; i<reports.length; i++) {
 
-        var golangCD = reports[i].CreationDate;
-        var cdRaw = golangCD.slice(0,19);
-        var cd = new Date(cdRaw);
+        let golangCD = reports[i].CreationDate;
+        let cdRaw = golangCD.slice(0,19);
+        console.log(cdRaw)
+        let cd = UTCToLocalTime(new Date(cdRaw));
+        console.log("anan", cd)
 
-        var cpString = reports[i].CoveragePercentage;
-        var cp = Number(cpString);
+        let cpString = reports[i].CoveragePercentage;
+        let cp = Number(cpString);
         
-        var ch = reports[i].CommitHash;
+        let ch = reports[i].CommitHash;
         data[i] = {x: cd, y: cp, z: ch};
-
+        console.log(data[i].x)
 
     }
+
     class Graph extends React.Component {
       hoveredCircle!: LineMarkSeriesPoint;
       state = {
@@ -75,28 +78,30 @@ export const AppForm = () => {
         return (
           <React.Fragment>
 
-            <h3>{ appName }</h3>
+            <h2>{ appName }</h2>
             
-            <FlexibleXYPlot xType="time" yDomain={[0,100]} width={1200} height={800}>
+            <XYPlot xType="time" yDomain={[0,100]} width={1300} height={900}>
             <VerticalGridLines />
             <HorizontalGridLines />
             <XAxis title="Date" />
             <YAxis title="Coverage percent" />
             <LineMarkSeries
-              animation
+              data={ data }
+            />
+            <MarkSeries
+              data={ data }
               onValueMouseOver={d => {
                 this.hoveredCircle = d;
                 this.setState({hovered: true});
               }}
-              onValueMouseOut={d => this.setState({hovered: false})}
-              data={ data }
+              onValueMouseOut={_d => this.setState({hovered: false})}            
             />
             { hovered === true && 
                 <Hint value={this.hoveredCircle}>
                     {this.hoveredCircle.z}
                 </Hint>
             }
-            </FlexibleXYPlot>
+            </XYPlot>
 
             <Table>
               <TableHeader>
@@ -109,7 +114,7 @@ export const AppForm = () => {
               <TableBody>
               {data.map(d => 
                 <TableRow>
-                  <TableCell>{d.x.toISOString()}</TableCell>
+                  <TableCell>{d.x.toString()}</TableCell>
                   <TableCell>{d.y}</TableCell>
                   <TableCell>{d.z}</TableCell>
                 </TableRow>
@@ -135,7 +140,6 @@ export const AppForm = () => {
   };
 
   return (
-    <React.Fragment>
       <form onSubmit={handleSubmit(onNewAppSubmit)}>
         <div className="field">
           <label htmlFor="Name">Name: </label>
@@ -161,11 +165,19 @@ export const AppForm = () => {
           )}
         </div>
 
-        <Button size="small" type="submit">Create app</Button>
+        <Button size="small" type="submit">Upload</Button>
 
       </form>
-    </React.Fragment>
   );
 
 };
+
+function UTCToLocalTime(date: Date) {
+
+  let localTime = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
+
+  localTime.setHours(date.getHours() - date.getTimezoneOffset() / 60);
+
+  return localTime;   
+}
 

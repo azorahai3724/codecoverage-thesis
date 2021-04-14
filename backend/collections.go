@@ -41,13 +41,13 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 
 	var a App
 
-	a.Name = r.FormValue("Name")
-
 	err = r.ParseMultipartForm(32 << 20)
 
 	if err != nil {
 		http.Error(w, "error parsing multipart request", http.StatusBadRequest)
 	}
+
+	a.Name = r.FormValue("Name")
 
 	f, _, err := r.FormFile("CoverageFile")
 	if err != nil {
@@ -160,7 +160,7 @@ func parseCoverageFile(s string) (float64, error) {
 		}
 		return pf, nil
 	}
-	return 0.0, errors.New("coverage file not supported")
+	return 0.0, errors.New("coverage file not supported or invalid file")
 }
 
 func enableCORS(w *http.ResponseWriter) {
