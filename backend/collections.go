@@ -100,7 +100,7 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 		newReport := reports{
 			CommitHash:         cHash,
 			CoveragePercentage: percentage,
-			CreationDate:       time.Now(),
+			CreationDate:       time.Now().UTC(),
 		}
 
 		op := bson.M{"$push": bson.M{"Reports": newReport}}
@@ -124,7 +124,7 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 	newReport := reports{
 		CommitHash:         cHash,
 		CoveragePercentage: percentage,
-		CreationDate:       time.Now(),
+		CreationDate:       time.Now().UTC(),
 	}
 
 	a.Reports = append(a.Reports, newReport)

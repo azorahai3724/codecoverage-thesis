@@ -55,16 +55,13 @@ export const AppForm = () => {
 
         let golangCD = reports[i].CreationDate;
         let cdRaw = golangCD.slice(0,19);
-        console.log(cdRaw)
         let cd = UTCToLocalTime(new Date(cdRaw));
-        console.log("anan", cd)
 
         let cpString = reports[i].CoveragePercentage;
         let cp = Number(cpString);
         
         let ch = reports[i].CommitHash;
         data[i] = {x: cd, y: cp, z: ch};
-        console.log(data[i].x)
 
     }
 
@@ -80,7 +77,7 @@ export const AppForm = () => {
 
             <h2>{ appName }</h2>
             
-            <XYPlot xType="time" yDomain={[0,100]} width={1300} height={900}>
+            <XYPlot xType="time" xDomain = {[data[0].x.getTime() - 360000 , new Date().getTime()] }yDomain={[0,100]} width={1300} height={900}>
             <VerticalGridLines />
             <HorizontalGridLines />
             <XAxis title="Date" />
