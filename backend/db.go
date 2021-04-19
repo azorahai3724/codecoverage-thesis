@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,8 +16,7 @@ import (
 // GetDbClient ... returns a new db connection
 func getDbClient() (*mongo.Client, error) {
 
-	URI := os.Getenv("URI")
-	c, err := mongo.Connect(context.Background(), options.Client().ApplyURI(URI))
+	c, err := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
 		return nil, fmt.Errorf("connecting to db: %w", err)
 	}
