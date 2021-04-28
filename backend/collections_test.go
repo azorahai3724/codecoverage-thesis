@@ -34,7 +34,7 @@ func Test_parseCoverageFile(t *testing.T) {
 
 		want       float64
 		wantErr    bool
-		inspectErr func(err error, t *testing.T) //use for more precise error evaluation after test
+		inspectErr func(err error, t *testing.T) // use for more precise error evaluation after test
 	}{
 		{
 			name: "100 percent",
@@ -88,7 +88,7 @@ func Test_enableCORS(t *testing.T) {
 		name string
 		args func(t *testing.T) args
 	}{
-		//TODO: Add test cases
+		// TODO: Add test cases
 	}
 
 	for _, tt := range tests {
@@ -96,7 +96,6 @@ func Test_enableCORS(t *testing.T) {
 			tArgs := tt.args(t)
 
 			enableCORS(tArgs.w)
-
 		})
 	}
 }
@@ -110,7 +109,7 @@ func Test_getOneApp(t *testing.T) {
 		name string
 		args func(t *testing.T) args
 	}{
-		//TODO: Add test cases
+		// TODO: Add test cases
 	}
 
 	for _, tt := range tests {
@@ -118,7 +117,6 @@ func Test_getOneApp(t *testing.T) {
 			tArgs := tt.args(t)
 
 			getOneApp(tArgs.w, tArgs.r)
-
 		})
 	}
 }
@@ -132,7 +130,7 @@ func Test_getAllApps(t *testing.T) {
 		name string
 		args func(t *testing.T) args
 	}{
-		//TODO: Add test cases
+		// TODO: Add test cases
 	}
 
 	for _, tt := range tests {
@@ -140,7 +138,6 @@ func Test_getAllApps(t *testing.T) {
 			tArgs := tt.args(t)
 
 			getAllApps(tArgs.w, tArgs.r)
-
 		})
 	}
 }

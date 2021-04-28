@@ -14,7 +14,7 @@ func Test_getDbClient(t *testing.T) {
 
 		want       *mongo.Client
 		wantErr    bool
-		inspectErr func(err error, t *testing.T) //use for more precise error evaluation after test
+		inspectErr func(err error, t *testing.T) // use for more precise error evaluation after test
 	}{
 		{
 			name:    "False connection",
@@ -54,7 +54,7 @@ func Test_testDbConnection(t *testing.T) {
 		args func(t *testing.T) args
 
 		wantErr    bool
-		inspectErr func(err error, t *testing.T) //use for more precise error evaluation after test
+		inspectErr func(err error, t *testing.T) // use for more precise error evaluation after test
 	}{
 		{
 			name: "Invalid connection",
@@ -98,7 +98,7 @@ func Test_getDbCollection(t *testing.T) {
 
 		want       *mongo.Collection
 		wantErr    bool
-		inspectErr func(err error, t *testing.T) //use for more precise error evaluation after test
+		inspectErr func(err error, t *testing.T) // use for more precise error evaluation after test
 	}{
 		{
 			name: "Invalid collection",

@@ -34,7 +34,6 @@ type reports struct {
 var c, err = getDbCollection("mycollection", "mydb")
 
 func newApp(w http.ResponseWriter, r *http.Request) {
-
 	fmt.Println("Hit endpoint: newApp")
 
 	w.Header().Set("Content-Type", "application/json")
@@ -60,9 +59,7 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 	_, err = io.Copy(&b, f)
 
 	if err != nil {
-
 		http.Error(w, "error getting file", http.StatusInternalServerError)
-
 	}
 
 	content := b.String()
@@ -76,17 +73,12 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 
 	count, err := c.CountDocuments(ctx, filter)
 	if err != nil {
-
 		log.Fatalf("Counting document: %s", err)
-
 	}
 
 	percentage, err := parseCoverageFile(content)
-
 	if err != nil {
-
 		log.Fatalf("parsing coverage file: %s", err)
-
 	}
 
 	cHash := r.FormValue("CommitHash")
@@ -139,14 +131,12 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	enableCORS(&w)
-	//201 Created
+	// 201 Created
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(a)
-
 }
 
 func parseCoverageFile(s string) (float64, error) {
-
 	if strings.Contains(s, "total:") {
 		l := s[strings.LastIndex(s, ")")+1:]
 
@@ -168,10 +158,9 @@ func enableCORS(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Headers", "Content-Type")
 }
 
-//https://www.mongodb.com/blog/post/quick-start-golang--mongodb--how-to-read-documents
+// https://www.mongodb.com/blog/post/quick-start-golang--mongodb--how-to-read-documents
 
 func getOneApp(w http.ResponseWriter, r *http.Request) {
-
 	fmt.Println("Hit endpoint: getOneApp")
 	w.Header().Set("Content-Type", "application/json")
 
@@ -186,17 +175,14 @@ func getOneApp(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	err := c.FindOne(ctx, filter).Decode(&app)
-
 	if err != nil {
 		log.Printf("getting an app: %s", err)
 	}
 	fmt.Println(app)
 	json.NewEncoder(w).Encode(app)
-
 }
 
 func getAllApps(w http.ResponseWriter, r *http.Request) {
-
 	fmt.Println("Hit endpoint: getAllApps")
 	w.Header().Set("Content-Type", "application/json")
 
@@ -206,7 +192,6 @@ func getAllApps(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	cursor, err := c.Find(ctx, bson.M{})
-
 	if err != nil {
 		log.Fatalf("getting cursor: %s", err)
 	}
@@ -221,5 +206,4 @@ func getAllApps(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(apps)
 
 	json.NewEncoder(w).Encode(apps)
-
 }

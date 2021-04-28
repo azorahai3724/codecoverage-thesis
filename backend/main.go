@@ -8,7 +8,6 @@ import (
 )
 
 func main() {
-
 	router := mux.NewRouter()
 
 	println("Serving")
@@ -18,9 +17,7 @@ func main() {
 	router.HandleFunc("/app/{Name}", getOneApp).Methods("GET")
 
 	err := http.ListenAndServe(":10000", router)
-
 	if err != nil {
 		log.Fatal("Listen and serve: %w", err)
 	}
-
 }
