@@ -23,15 +23,17 @@ export const AppForm = () => {
 
   const onNewAppSubmit = async (d: NewApp) => {
 
-    fd.append('Name', d.Name)
+    fd.append('Name', d.Name);
 
-    if (d.CoverageFile[0].name.split('.').pop() !== "out") {
-      alert("The uploaded file is not supported")
-      return false
+    if (d.CoverageFile[0].name.endsWith(".out") === false) {
+      alert("The uploaded file is not supported");
+      return false;
     }
-    fd.append('CoverageFile', d.CoverageFile[0])
+    else {
+      fd.append('CoverageFile', d.CoverageFile[0]);
+    }
     
-    fd.append('CommitHash', d.CommitHash)
+    fd.append('CommitHash', d.CommitHash);
 
     const response = await fetch("http://localhost:10000/app/create", {
 
@@ -81,9 +83,9 @@ export const AppForm = () => {
         return (
           <React.Fragment>
 
-            <h2>{ appName }</h2>
+            <h2 data-testid="appName">{ appName }</h2>
             
-            <XYPlot xType="time" xDomain = {[data[0].x.getTime() - 360000 , new Date().getTime()] }yDomain={[0,100]} width={1300} height={900}>
+            <XYPlot data-testid="graph" xType="time" xDomain = {[data[0].x.getTime() - 360000 , new Date().getTime()] }yDomain={[0,100]} width={1300} height={900}>
             <VerticalGridLines />
             <HorizontalGridLines />
             <XAxis title="Date" />
@@ -106,7 +108,7 @@ export const AppForm = () => {
             }
             </XYPlot>
 
-            <Table>
+            <Table data-testid="table">
               <TableHeader>
                 <TableHeaderRow>
                   <TableHeaderCell>Creation Date</TableHeaderCell>
@@ -143,10 +145,10 @@ export const AppForm = () => {
   };
 
   return (
-      <form onSubmit={handleSubmit(onNewAppSubmit)}>
+      <form data-testid="form" onSubmit={handleSubmit(onNewAppSubmit)}>
         <div className="field">
           <label htmlFor="Name">Name: </label>
-          <input type="text" id="Name" name="Name" ref={register({required:true})}/>
+          <input data-testid="name" type="text" id="Name" name="Name" ref={register({required:true})}/>
           {errors.Name && errors.Name.type === "required" && (
             <div className="error">App name is mandatory.</div>
           )}
@@ -154,7 +156,7 @@ export const AppForm = () => {
 
         <div className="field">
           <label htmlFor="CoverageFile">Coverage File: </label>
-          <input type="file" id="CoverageFile" name="CoverageFile" ref={register({required:true})}/>
+          <input data-testid="file" type="file" id="CoverageFile" name="CoverageFile" ref={register({required:true})}/>
           {errors.CoverageFile && (
             <div className="error">Coverage file is mandatory.</div>
           )}
@@ -162,13 +164,13 @@ export const AppForm = () => {
 
         <div className="field">
           <label htmlFor="CommitHash">Commit Hash </label>
-          <input type="text" id="CommitHash" name="CommitHash" ref={register({required:true})}/>
+          <input data-testid="CommitText" type="text" id="CommitHash" name="CommitHash" ref={register({required:true})}/>
           {errors.CommitHash && (
             <div className="error">Commit Hash is mandatory.</div>
           )}
         </div>
 
-        <Button size="small" type="submit">Upload</Button>
+        <Button data-testid="submit" size="small" type="submit">Upload</Button>
 
       </form>
   );

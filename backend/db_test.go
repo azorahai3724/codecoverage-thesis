@@ -17,7 +17,7 @@ func Test_getDbClient(t *testing.T) {
 		inspectErr func(err error, t *testing.T) // use for more precise error evaluation after test
 	}{
 		{
-			name:    "False connection",
+			name:    "False connection if db is not started",
 			want:    nil,
 			wantErr: true,
 			inspectErr: func(err error, t *testing.T) {
@@ -57,7 +57,7 @@ func Test_testDbConnection(t *testing.T) {
 		inspectErr func(err error, t *testing.T) // use for more precise error evaluation after test
 	}{
 		{
-			name: "Invalid connection",
+			name: "Invalid connection if db is not started",
 			args: func(t *testing.T) args {
 				return args{
 					ctx: nil,
@@ -101,7 +101,7 @@ func Test_getDbCollection(t *testing.T) {
 		inspectErr func(err error, t *testing.T) // use for more precise error evaluation after test
 	}{
 		{
-			name: "Invalid collection",
+			name: "Invalid collection if db is not started",
 			args: func(t *testing.T) args {
 				return args{
 					CollectionName: "",
