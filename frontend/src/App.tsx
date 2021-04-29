@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import { useForm } from "react-hook-form"
 import ReactDOM from 'react-dom';
-import { XAxis, YAxis, HorizontalGridLines, VerticalGridLines,LineMarkSeries, Hint, LineMarkSeriesPoint, FlexibleXYPlot, XYPlot, MarkSeries } from 'react-vis';
+import { XAxis, YAxis, HorizontalGridLines, VerticalGridLines,LineMarkSeries, Hint, LineMarkSeriesPoint, XYPlot, MarkSeries } from 'react-vis';
 import "react-vis/dist/style.css";
 import {Button, Table, TableBody, TableCell, TableHeader, TableHeaderCell, TableHeaderRow, TableRow } from '@bitrise/bitkit';
 
@@ -24,7 +24,13 @@ export const AppForm = () => {
   const onNewAppSubmit = async (d: NewApp) => {
 
     fd.append('Name', d.Name)
+
+    if (d.CoverageFile[0].name.split('.').pop() !== "out") {
+      alert("The uploaded file is not supported")
+      return false
+    }
     fd.append('CoverageFile', d.CoverageFile[0])
+    
     fd.append('CommitHash', d.CommitHash)
 
     const response = await fetch("http://localhost:10000/app/create", {
