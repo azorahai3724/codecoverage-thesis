@@ -136,19 +136,19 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(app)
 }
 
-func parseCoverageFile(s string) (float64, error) {
-	if strings.Contains(s, "total:") {
-		l := s[strings.LastIndex(s, ")")+1:]
+func parseCoverageFile(givenString string) (float64, error) {
+	if strings.Contains(givenString, "total:") {
+		line := givenString[strings.LastIndex(givenString, ")")+1:]
 
-		ts := strings.Split(l, "%")
+		spacedPercentage := strings.Split(line, "%")
 
-		ps := strings.TrimSpace(ts[0])
+		trimmedPercentage := strings.TrimSpace(spacedPercentage[0])
 
-		pf, err := strconv.ParseFloat(ps, 64)
+		floatedPercentage, err := strconv.ParseFloat(trimmedPercentage, 64)
 		if err != nil {
-			log.Fatalf("parsing coverage file: %s", err)
+			log.Fatalf("parsing coverage file percentage: %s", err)
 		}
-		return pf, nil
+		return floatedPercentage, nil
 	}
 	return 0.0, errors.New("coverage file not supported or invalid file")
 }

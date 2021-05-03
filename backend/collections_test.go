@@ -34,7 +34,7 @@ func Test_parseCoverageFile(t *testing.T) {
 
 		want       float64
 		wantErr    bool
-		inspectErr func(err error, t *testing.T) // use for more precise error evaluation after test
+		inspectErr func(err error, t *testing.T)
 	}{
 		{
 			name: "100 percent",
