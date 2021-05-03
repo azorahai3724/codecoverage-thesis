@@ -33,7 +33,7 @@ type reports struct {
 
 var collection, err = getDbCollection("mycollection", "mydb")
 
-func newApp(w http.ResponseWriter, r *http.Request) {
+func newReport(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Hit endpoint: newApp")
 
 	w.Header().Set("Content-Type", "application/json")
@@ -98,6 +98,7 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 		op := bson.M{"$push": bson.M{"Reports": newReport}}
 		collection.UpdateOne(ctx, filter, op)
 
+		// 200 OK
 		w.WriteHeader(http.StatusOK)
 
 		var updatedApp App

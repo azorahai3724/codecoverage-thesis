@@ -19,7 +19,7 @@ func Test_newApp(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			newApp(tt.args.w, tt.args.r)
+			newReport(tt.args.w, tt.args.r)
 		})
 	}
 }

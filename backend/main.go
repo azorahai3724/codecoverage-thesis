@@ -12,7 +12,7 @@ func main() {
 
 	println("Serving")
 
-	router.HandleFunc("/app/create", newApp).Methods("POST", "OPTIONS")
+	router.HandleFunc("/app/create", newReport).Methods("POST", "OPTIONS")
 	router.HandleFunc("/app", getAllApps).Methods("GET")
 	router.HandleFunc("/app/{Name}", getOneApp).Methods("GET")
 
