@@ -38,7 +38,7 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	var a App
+	var app App
 
 	err = r.ParseMultipartForm(32 << 20)
 
@@ -46,7 +46,7 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error parsing multipart request", http.StatusBadRequest)
 	}
 
-	a.Name = r.FormValue("Name")
+	app.Name = r.FormValue("Name")
 
 	f, _, err := r.FormFile("CoverageFile")
 	if err != nil {
@@ -69,7 +69,7 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	filter := bson.M{"Name": a.Name}
+	filter := bson.M{"Name": app.Name}
 
 	count, err := collection.CountDocuments(ctx, filter)
 	if err != nil {
@@ -85,7 +85,7 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 
 	if count >= 1 {
 
-		fmt.Printf("Document by the name %s already exists, updated", a.Name)
+		fmt.Printf("Document by the name %s already exists, updated", app.Name)
 
 		enableCORS(&w)
 
@@ -111,7 +111,7 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	a.AppID = primitive.NewObjectID()
+	app.AppID = primitive.NewObjectID()
 
 	newReport := reports{
 		CommitHash:         cHash,
@@ -119,12 +119,12 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 		CreationDate:       time.Now().UTC(),
 	}
 
-	a.Reports = append(a.Reports, newReport)
+	app.Reports = append(app.Reports, newReport)
 
 	ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	_, err = collection.InsertOne(ctx, a)
+	_, err = collection.InsertOne(ctx, app)
 
 	if err != nil {
 		log.Fatalf("insert one to db: %s", err)
@@ -133,7 +133,7 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 	enableCORS(&w)
 	// 201 Created
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(a)
+	json.NewEncoder(w).Encode(app)
 }
 
 func parseCoverageFile(s string) (float64, error) {
