@@ -31,7 +31,7 @@ type reports struct {
 	CreationDate       time.Time `bson:"CreationDate" json:"CreationDate"`
 }
 
-var c, err = getDbCollection("mycollection", "mydb")
+var collection, err = getDbCollection("mycollection", "mydb")
 
 func newApp(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Hit endpoint: newApp")
@@ -71,7 +71,7 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 
 	filter := bson.M{"Name": a.Name}
 
-	count, err := c.CountDocuments(ctx, filter)
+	count, err := collection.CountDocuments(ctx, filter)
 	if err != nil {
 		log.Fatalf("Counting document: %s", err)
 	}
@@ -96,12 +96,12 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 		}
 
 		op := bson.M{"$push": bson.M{"Reports": newReport}}
-		c.UpdateOne(ctx, filter, op)
+		collection.UpdateOne(ctx, filter, op)
 
 		w.WriteHeader(http.StatusOK)
 
 		var updatedApp App
-		err = c.FindOne(ctx, filter).Decode(&updatedApp)
+		err = collection.FindOne(ctx, filter).Decode(&updatedApp)
 
 		if err != nil {
 			log.Printf("getting an app: %s", err)
@@ -124,7 +124,7 @@ func newApp(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	_, err = c.InsertOne(ctx, a)
+	_, err = collection.InsertOne(ctx, a)
 
 	if err != nil {
 		log.Fatalf("insert one to db: %s", err)
@@ -174,7 +174,7 @@ func getOneApp(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err := c.FindOne(ctx, filter).Decode(&app)
+	err := collection.FindOne(ctx, filter).Decode(&app)
 	if err != nil {
 		log.Printf("getting an app: %s", err)
 	}
@@ -191,7 +191,7 @@ func getAllApps(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	cursor, err := c.Find(ctx, bson.M{})
+	cursor, err := collection.Find(ctx, bson.M{})
 	if err != nil {
 		log.Fatalf("getting cursor: %s", err)
 	}
