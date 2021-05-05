@@ -73,7 +73,7 @@ export const AppForm = () => {
 
     }
 
-    class Graph extends React.Component {
+    class GraphAndTable extends React.Component {
       hoveredCircle!: LineMarkSeriesPoint;
       state = {
         hovered: false
@@ -138,7 +138,7 @@ export const AppForm = () => {
 
     if (Object.keys(appJsonData).length !== 0) {
         ReactDOM.render(
-          <Graph />, graphDiv
+          <GraphAndTable />, graphDiv
         )
     }
     
