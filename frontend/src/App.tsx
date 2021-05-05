@@ -51,13 +51,13 @@ export const AppForm = () => {
     var appName = appJsonData["Name"];
     var reports = appJsonData["Reports"];
 
-    type graphData = {
+    type coverageData = {
       x: Date,
       y: number,
       z: string
     }
 
-    let data: graphData[] = [];
+    let data: coverageData[] = [];
 
     for (var i=0; i<reports.length; i++) {
 
