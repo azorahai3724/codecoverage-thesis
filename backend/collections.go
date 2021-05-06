@@ -159,8 +159,6 @@ func enableCORS(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Headers", "Content-Type")
 }
 
-// https://www.mongodb.com/blog/post/quick-start-golang--mongodb--how-to-read-documents
-
 func getOneApp(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Hit endpoint: getOneApp")
 	w.Header().Set("Content-Type", "application/json")

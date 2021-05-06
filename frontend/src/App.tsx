@@ -12,9 +12,6 @@ type NewApp = {
   CommitHash: string;
 };
 
-
-//https://www.carlrippon.com/getting-started-with-react-hook-form-with-typeScript/
-
 export const AppForm = () => {
 
   const { register, handleSubmit, errors } = useForm<NewApp>();

@@ -10,9 +10,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-// https://medium.com/better-programming/building-a-restful-api-with-go-and-mongodb-93e59cbbee88
-// https://www.mongodb.com/blog/post/quick-start-golang--mongodb--starting-and-setup
-
 // GetDbClient ... returns a new db connection
 func getDbClient() (*mongo.Client, error) {
 	c, err := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://localhost:27017"))
