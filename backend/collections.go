@@ -43,6 +43,7 @@ func newReport(w http.ResponseWriter, r *http.Request) {
 	err = r.ParseMultipartForm(32 << 20)
 
 	if err != nil {
+		log.Printf("Parsing multipart form: %s", err)
 		http.Error(w, "error parsing multipart request", http.StatusBadRequest)
 	}
 
@@ -50,7 +51,8 @@ func newReport(w http.ResponseWriter, r *http.Request) {
 
 	f, _, err := r.FormFile("CoverageFile")
 	if err != nil {
-		log.Fatalf("Parsing file: %s", err)
+		log.Printf("Parsing file: %s", err)
+		http.Error(w, "error parsing file", http.StatusInternalServerError)
 	}
 	defer f.Close()
 
@@ -59,6 +61,7 @@ func newReport(w http.ResponseWriter, r *http.Request) {
 	_, err = io.Copy(&b, f)
 
 	if err != nil {
+		log.Printf("error getting file: %s", err)
 		http.Error(w, "error getting file", http.StatusInternalServerError)
 	}
 
@@ -73,12 +76,12 @@ func newReport(w http.ResponseWriter, r *http.Request) {
 
 	count, err := collection.CountDocuments(ctx, filter)
 	if err != nil {
-		log.Fatalf("Counting document: %s", err)
+		log.Printf("counting document: %s", err)
 	}
 
 	percentage, err := parseCoverageFile(content)
 	if err != nil {
-		log.Fatalf("parsing coverage file: %s", err)
+		log.Printf("parsing coverage file: %s", err)
 	}
 
 	cHash := r.FormValue("CommitHash")
@@ -128,7 +131,7 @@ func newReport(w http.ResponseWriter, r *http.Request) {
 	_, err = collection.InsertOne(ctx, app)
 
 	if err != nil {
-		log.Fatalf("insert one to db: %s", err)
+		log.Printf("insert one to db: %s", err)
 	}
 
 	enableCORS(&w)
@@ -147,7 +150,7 @@ func parseCoverageFile(givenString string) (float64, error) {
 
 		floatedPercentage, err := strconv.ParseFloat(trimmedPercentage, 64)
 		if err != nil {
-			log.Fatalf("parsing coverage file percentage: %s", err)
+			log.Printf("parsing coverage file percentage: %s", err)
 		}
 		return floatedPercentage, nil
 	}
@@ -192,7 +195,7 @@ func getAllApps(w http.ResponseWriter, r *http.Request) {
 
 	cursor, err := collection.Find(ctx, bson.M{})
 	if err != nil {
-		log.Fatalf("getting cursor: %s", err)
+		log.Printf("getting cursor: %s", err)
 	}
 
 	defer cursor.Close(ctx)
@@ -200,7 +203,7 @@ func getAllApps(w http.ResponseWriter, r *http.Request) {
 	err = cursor.All(ctx, &apps)
 
 	if err != nil {
-		log.Fatalf("getting all apps: %s", err)
+		log.Printf("getting all apps: %s", err)
 	}
 	fmt.Println(apps)
 
