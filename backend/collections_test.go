@@ -14,9 +14,7 @@ func Test_newApp(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-	}{
-		// TODO: Add test cases.
-	}
+	}{}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			newReport(tt.args.w, tt.args.r)
@@ -87,9 +85,7 @@ func Test_enableCORS(t *testing.T) {
 	tests := []struct {
 		name string
 		args func(t *testing.T) args
-	}{
-		// TODO: Add test cases
-	}
+	}{}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -108,9 +104,7 @@ func Test_getOneApp(t *testing.T) {
 	tests := []struct {
 		name string
 		args func(t *testing.T) args
-	}{
-		// TODO: Add test cases
-	}
+	}{}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -129,9 +123,7 @@ func Test_getAllApps(t *testing.T) {
 	tests := []struct {
 		name string
 		args func(t *testing.T) args
-	}{
-		// TODO: Add test cases
-	}
+	}{}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
